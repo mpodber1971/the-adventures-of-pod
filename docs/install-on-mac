@@ -7,6 +7,8 @@ brew install git
 brew cask install slack
 
 ln -s ~/magento/the-adventures-of-pod/scripts/run_auto.sh run_auto.sh
+ln -s ~/magento/the-adventures-of-pod/scripts/run-terraform-only.sh run-terraform-only.sh
+ln -s ~/magento/the-adventures-of-pod/scripts/run-ansible-only.sh run-ansible-only.sh
 
 for git
 
