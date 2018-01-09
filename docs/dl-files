@@ -1,0 +1,23 @@
+base:
+
+docker-credential-ecr-login
+jenkins.model.JenkinsLocationConfiguration.xml 
+org.thoughtslive.jenkins.plugins.jira.Config.xml 
+
+datadog:
+jenk_executors_busy.py
+jenk_executors_busy.yaml
+jenk_queue.py
+jenk_queue.yaml 
+
+secrets:
+hudson.util.Secret
+master.key
+
+ssl:
+DigiCertCA.cer 
+star.devops.magento.com.cer
+star.devops.magento.com.key
+
+plugins:
+whole directory
