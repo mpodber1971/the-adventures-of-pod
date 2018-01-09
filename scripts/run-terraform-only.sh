@@ -1,5 +1,11 @@
 #!/bin/bash
 
+set +x
+set -e
+
+export MASTER_IP=$1
+#export JENKMDATE=$2
+#
 export JENKINS_TYPE=toolm-x-x-int
 export JENKINS_BRANCH=""
 export Environment="Staging"
@@ -12,7 +18,7 @@ export JENK_VOL_TYPE="gp2"
 export SKIPNODES="no"
 export TEST_NODES="no"
 export TOTAL_TEST_NODES="4"
-export thebranch=""
+export thebranch=$(git branch | grep '*' |  awk '{print $2}')
 export USE_JENKINS_AMI="ami-985b31e2"
 export JENKS_AMI="ami-cf693eb5"
 #
@@ -21,9 +27,12 @@ export STARTING_NODE_AZ='a'
 export CLEAR_JOBS=no
 export FULL_PROCESS=no
 export TERRAFORM_ONLY=yes
+export Service="jenkins-tool-int"
 
-cd terraform
+cd jenkins-master/terraform
 rm terraform.tfstate || true
 rm jenkins.tfvars || true
 cd -
+cd jenkins-master
 AWS_PROFILE=devops sh jenkins_automation.sh
+cd -
