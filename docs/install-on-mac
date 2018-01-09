@@ -1,0 +1,9 @@
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew cask install sublime-text
+brew install tfenv
+brew install ansible
+brew install awscli
+brew install git
+brew cask install slack
+
+ln -s ~/magento/the-adventures-of-pod/scripts/run_auto.sh run_auto.sh
