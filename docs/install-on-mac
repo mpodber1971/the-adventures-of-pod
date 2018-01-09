@@ -7,3 +7,8 @@ brew install git
 brew cask install slack
 
 ln -s ~/magento/the-adventures-of-pod/scripts/run_auto.sh run_auto.sh
+
+for git
+
+git config --global user.name "Matthew Podber"
+git config --global user.email mpodber@yahoo.com
