@@ -7,5 +7,5 @@ AWS_PROFILE=webdigital aws ec2 describe-iam-instance-profile-associations --filt
 
 IID=$(AWS_PROFILE=webdigital aws ec2 describe-iam-instance-profile-associations --filters Name=instance-id,Values=$1 --query IamInstanceProfileAssociations[*].AssociationId --output text)
 
-echo $IID
-#AWS_PROFILE=webdigital aws ec2 disassociate-iam-instance-profile --association-id $IID
+#echo $IID
+AWS_PROFILE=webdigital aws ec2 disassociate-iam-instance-profile --association-id $IID
