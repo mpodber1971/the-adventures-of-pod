@@ -6,6 +6,10 @@ brew install awscli
 brew install git
 brew cask install slack
 
+# boto
+sudo easy_install pip
+sudo pip install boto
+
 ln -s ~/magento/the-adventures-of-pod/scripts/run_auto.sh run_auto.sh
 ln -s ~/magento/the-adventures-of-pod/scripts/run-terraform-only.sh run-terraform-only.sh
 ln -s ~/magento/the-adventures-of-pod/scripts/run-ansible-only.sh run-ansible-only.sh

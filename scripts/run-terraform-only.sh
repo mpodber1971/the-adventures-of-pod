@@ -3,7 +3,7 @@
 set +x
 set -e
 
-export MASTER_IP=$1
+#export MASTER_IP=$1
 #export JENKMDATE=$2
 #
 export JENKINS_TYPE=toolm-x-x-int
