@@ -14,7 +14,7 @@ set -e
 #export JENKS_AMI="ami-cf693eb5"
 #
 export JENK_SUBNET_NAME="Digital-1a-Private-PL"
-export JENKINS_TYPE=jenkm-t-fatext-pr
+export JENKINS_TYPE="jenkm-t-fatext-pr"
 export JENK_KEY_NAME="saas-cicd2"
 export JENK_SEC_GRP_NAMES="Digital-private-Prod Digital-private-ALL digital-jenkins-access-cicd"
 export USE_JENKINS_AMI="ami-3c47da46"
@@ -37,7 +37,11 @@ export CLEAR_JOBS=no
 export FULL_PROCESS=no
 export TERRAFORM_ONLY=no
 export LOCALLOGNAME="matt.log"
-export SKIPNODES=yes
+#export SKIPNODES=yes
+#export TEST_NODES=no
+export SKIPNODES=no
+export TEST_NODES=yes
+export TOTAL_TEST_NODES=4
 #export Service="jenkins-tool-int"
 
 cd jenkins-master/terraform
