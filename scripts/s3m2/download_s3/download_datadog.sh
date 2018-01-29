@@ -10,3 +10,5 @@ AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/api_jenk_executors_busy.py $LOCLOCA
 AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/api_jenk_queue.py $LOCLOCATION/api_jenk_queue.py
 AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/jenk_executors_busy.py $LOCLOCATION/jenk_executors_busy.py
 AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/jenk_executors_busy.yaml $LOCLOCATION/jenk_executors_busy.yaml
+AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/jenk_queue.yaml $LOCLOCATION/
+AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/jenk_queue.py $LOCLOCATION/
