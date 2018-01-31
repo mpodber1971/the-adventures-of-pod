@@ -20,7 +20,16 @@ if ! [ -z "$1" ];then
   export MASTER_IP=$1
   echo "MASTER ip: $MASTER_IP"
 fi
-
+#
+export MATTENV=devops
+export JENKINS_TYPE=toolm-x-x-int
+export JENK_SUBNET_NAME="DevOps-Svc-Int-Private-us-east-1c"
+export JENK_KEY_NAME="devops-build-17"
+export JENK_SEC_GRP_NAMES="DevOps-Svc-Int-Office-SSH-Access-sg DevOps-Svc-Int-Office-HTTP-Access-sg DevOps-Svc-Int-webdigital-access-sg DevOps-Svc-Int-eqp-access-sg DevOps-Svc-Int-jenkins-tool-master-sg"
+#export USE_JENKINS_AMI="ami-985b31e2" #AMI v1
+export USE_JENKINS_AMI="ami-b2003ac8" #AMI v2 - kernel changes
+export JENKS_AMI="ami-cf693eb5"
+#
 #export Stage="Team"
 export Executors=0
 export CLEAR_JOBS="no"
@@ -48,5 +57,5 @@ cd terraform
 rm terraform.tfstate || true
 rm jenkins.tfvars || true
 cd -
-sh jenkins_automation.sh
+AWS_PROFILE=$MATTENV sh jenkins_automation.sh
 
