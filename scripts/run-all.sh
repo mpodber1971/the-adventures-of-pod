@@ -4,6 +4,7 @@ set +x
 set -e
 
 #
+#export MATTENV=devops
 #export Environment="Production"
 #export Environment="Develop"
 #export Service="jenkins-tool-int"
@@ -14,7 +15,8 @@ set -e
 #export USE_JENKINS_AMI="ami-985b31e2"
 #export JENKS_AMI="ami-cf693eb5"
 #
-export Environment="Staging"
+export MATTENV=webdigital
+export Environment="Develop"
 export JENKINS_TYPE="jenkm-t-fatext-pr"
 export JENK_SUBNET_NAME="WebDigital-Private-PL-1a"
 export JENK_KEY_NAME="saas-cicd2"
@@ -42,5 +44,6 @@ rm terraform.tfstate || true
 rm jenkins.tfvars || true
 cd -
 cd jenkins-master
-DRY_RUN=yes AWS_PROFILE=webdigital sh jenkins_automation.sh
+#DRY_RUN=yes 
+AWS_PROFILE=$MATTENV sh jenkins_automation.sh
 cd -
