@@ -3,8 +3,13 @@
 set +x
 set -e
 
-UPLOADLOCATION="s3://jenkins-automation-artifacts-Int-eqp/ssl"
+echo "ENV: $1"
+echo "Type: $2"
+
+UPLOADLOCATION="s3://jenkins-automation-artifacts-$1-$2/ssl"
 LOCALLOCATION="/Users/mpodber/files/jenkins-auto/ssl"
+
+echo "Upload Location: $UPLOADLOCATION"
 
 THEPROFILE=devops
 

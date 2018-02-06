@@ -3,10 +3,15 @@
 set +x
 set -e
 
+echo "ENV: $1"
+echo "Type: $2"
+
 THEPROFILE=devops
 
-UPLOADLOCATION="s3://jenkins-automation-artifacts-Int-eqp/plugins"
+UPLOADLOCATION="s3://jenkins-automation-artifacts-$1-$2/plugins"
 LOCALLOCATION="/Users/mpodber/files/jenkins-auto/plugins"
+
+echo "Upload Location: $UPLOADLOCATION"
 
 AWS_PROFILE=$THEPROFILE aws s3 cp $LOCALLOCATION/workflow-cps.jpi $UPLOADLOCATION/
 AWS_PROFILE=$THEPROFILE aws s3 cp $LOCALLOCATION/workflow-cps-global-lib.jpi $UPLOADLOCATION/

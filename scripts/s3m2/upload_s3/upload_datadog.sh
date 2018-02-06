@@ -3,11 +3,15 @@
 set +x
 set -e
 
+echo "ENV: $1"
+echo "Type: $2"
 
 THEPROFILE=devops
 
-UPLOADLOCATION="s3://jenkins-automation-artifacts-Int-eqp/datadog"
+UPLOADLOCATION="s3://jenkins-automation-artifacts-$1-$2/datadog"
 LOCALLOCATION="/Users/mpodber/files/jenkins-auto/datadog"
+
+echo "Upload Location: $UPLOADLOCATION"
 
 AWS_PROFILE=$THEPROFILE aws s3 cp $LOCALLOCATION/api_jenk_executors_busy.py $UPLOADLOCATION/api_jenk_executors_busy.py
 AWS_PROFILE=$THEPROFILE aws s3 cp $LOCALLOCATION/api_jenk_queue.py $UPLOADLOCATION/api_jenk_queue.py

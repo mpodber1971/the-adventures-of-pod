@@ -3,8 +3,13 @@
 set +x
 set -e
 
-UPLOADLOCATION="s3://jenkins-automation-artifacts-Int-eqp/secrets"
+echo "ENV: $1"
+echo "Type: $2"
+
+UPLOADLOCATION="s3://jenkins-automation-artifacts-$1-$2/secrets"
 LOCALLOCATION="/Users/mpodber/files/jenkins-auto/secrets"
+
+echo "Upload Location: $UPLOADLOCATION"
 
 THEPROFILE=devops
 
