@@ -1,0 +1,1 @@
+AWS_PROFILE=webdigital aws ec2 associate-iam-instance-profile --instance-id $1 --iam-instance-profile Name=ssm-for-ec2-all

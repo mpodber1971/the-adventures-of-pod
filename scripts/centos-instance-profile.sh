@@ -1,0 +1,1 @@
+sh add-instance-profile.sh $2

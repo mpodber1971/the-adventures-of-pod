@@ -16,12 +16,15 @@ set -e
 #export JENKS_AMI="ami-cf693eb5"
 #
 export MATTENV=webdigital
-export Environment="Develop"
-export JENKINS_TYPE="jenkm-t-fatext-pr"
+export Environment="Production"
 export JENK_SUBNET_NAME="WebDigital-Private-PL-1a"
+#export JENKINS_TYPE="jenkins-mdc-fatext"
+export JENKINS_TYPE="jenkm-t-interface-ur"
 export JENK_KEY_NAME="saas-cicd2"
 export JENK_SEC_GRP_NAMES="Digital-private-Prod Digital-private-ALL digital-jenkins-access-cicd"
-export USE_JENKINS_AMI="ami-3c47da46"
+#export USE_JENKINS_AMI="ami-3c47da46"
+export USE_JENKINS_AMI="ami-04ad957e" #AMI v2 - kernel changes
+export JENKINS_DISK_SIZE=100
 #
 export JENKINS_BRANCH=""
 export Executors="0"
