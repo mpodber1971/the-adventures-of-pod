@@ -1,0 +1,2 @@
+add to any jenkins URL to see what jobs are running:
+/computer/api/xml?tree=computer[executors[currentExecutable[url]],oneOffExecutors[currentExecutable[url]]]&xpath=//url&wrapper=builds
