@@ -1,2 +1,31 @@
-add to any jenkins URL to see what jobs are running:
+# add to any jenkins URL to see what jobs are running:
 /computer/api/xml?tree=computer[executors[currentExecutable[url]],oneOffExecutors[currentExecutable[url]]]&xpath=//url&wrapper=builds
+
+# find threads
+Thread.getAllStackTraces()
+
+# kill job
+Thread.getAllStackTraces().keySet().each() {
+  t -> if (t.getName()=="YOUR THREAD NAME" ) {   t.interrupt();  }
+}
+
+Thread.getAllStackTraces().keySet().each() {
+  t -> println(t.getName());
+}
+
+
+# abort job, need JobName and JobNumber 
+URL/computer/api/xml?tree=computer[executors[currentExecutable[url]],oneOffExecutors[currentExecutable[url]]]&xpath=//url&wrapper=builds
+Jenkins.instance.getItemByFullName("JobName").getBuildByNumber(JobNumber).finish(hudson.model.Result.ABORTED, new java.io.IOException("Aborting build")); 
+
+failed jobs:
+
+// Get the list of failed jobs
+activeJobs = hudson.model.Hudson.instance.items.findAll{job -> job.isBuildable()}
+failedRuns = activeJobs.findAll{job -> job.lastBuild != null && job.lastBuild.result == hudson.model.Result.FAILURE}
+// Do something with them - e.g. listing them
+failedRuns.each{run -> println(run.name)}
+
+# other interesting links:
+https://stackoverflow.com/questions/39013254/how-do-i-kill-a-process-left-behind-after-an-aborted-jenkins-job-using-the-groo
+https://gist.github.com/dnozay/e7afcf7a7dd8f73a4e05
