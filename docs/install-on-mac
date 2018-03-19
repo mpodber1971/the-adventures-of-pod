@@ -5,6 +5,7 @@ brew install ansible
 brew install awscli
 brew install git
 brew cask install slack
+brew install xmlstarlet
 
 # boto
 sudo easy_install pip
