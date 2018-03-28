@@ -3,10 +3,9 @@
 set +x
 set -e
 
-echo "ENV: $1"
-echo "Type: $2"
+echo "bucket: $1"
 
-UPLOADLOCATION="s3://jenkins-automation-artifacts-$1-$2/secrets"
+UPLOADLOCATION="s3://$1/secrets"
 LOCALLOCATION="/Users/mpodber/files/jenkins-auto/secrets"
 
 echo "Upload Location: $UPLOADLOCATION"

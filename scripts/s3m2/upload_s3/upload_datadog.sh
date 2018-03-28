@@ -3,12 +3,11 @@
 set +x
 set -e
 
-echo "ENV: $1"
-echo "Type: $2"
+echo "bucket: $1"
 
 THEPROFILE=devops
 
-UPLOADLOCATION="s3://jenkins-automation-artifacts-$1-$2/datadog"
+UPLOADLOCATION="s3://$1/datadog"
 LOCALLOCATION="/Users/mpodber/files/jenkins-auto/datadog"
 
 echo "Upload Location: $UPLOADLOCATION"

@@ -4,18 +4,18 @@ set +x
 set -e
 
 export MASTER_IP="$1"
+export MATTPASS="$2"
 #
 export Environment="Staging"
 #
 export MATTENV=devops
-export JENKINS_TYPE=toolm-x-x-int
-export JENK_SUBNET_NAME="DevOps-Svc-Int-Private-us-east-1c"
+export JENKINS_TYPE=toolm-x-x-stg
 export JENK_KEY_NAME="devops-build-17"
-export JENK_SEC_GRP_NAMES="DevOps-Svc-Int-Office-SSH-Access-sg DevOps-Svc-Int-Office-HTTP-Access-sg DevOps-Svc-Int-webdigital-access-sg DevOps-Svc-Int-eqp-access-sg DevOps-Svc-Int-jenkins-tool-master-sg"
-export USE_JENKINS_AMI="ami-985b31e2"
-export JENKS_AMI="ami-cf693eb5"
-export Service="jenkins-tool-int"
-export JENKINS_S3_HOME_DIR="s3://jenkins-automation-artifacts-Int-eqp"
+export JENK_SUBNET_ID="subnet-40c9f924"
+export Service="jenkins-tool-stg"
+export JENKINS_S3_HOME_DIR="s3://toolm-artifacts-stage"
+export JENK_AMI=="ami-9cbe67e1"
+export JENKB_SUBNET_AZ_END="a"
 #
 export JENKINS_BRANCH=""
 export Executors="0"
