@@ -11,16 +11,33 @@ export Environment="Staging"
 #export Environment="Production"
 #export DRY_RUN=yes
 #
-export MATTENV=devops
-export JENKINS_TYPE=toolm-x-x-stg
-export JENK_SUBNET_ID="subnet-40c9f924"
-export JENK_KEY_NAME="devops-build-17"
-export JENK_SEC_GRP_IDS='"sg-72067905","sg-c492c5b2","sg-9e7f00e9"'
-#export USE_JENKINS_AMI="ami-b2003ac8" 
-#export USE_JENKINS_AMI="ami-22d30c5f"
-export USE_JENKINS_AMI="ami-9cbe67e1"
+# tool master
+if ! [ -z "$TOOL" ];then
+  export MATTENV=devops	
+  export JENKINS_TYPE=toolm-stg
+  export JENK_SEC_GRP_IDS='"sg-72067905","sg-9e7f00e9","sg-c492c5b2"'
+  export JENKINS_MASTER_TYPE=""
+  export JENK_KEY_NAME="devops-build-17"
+  export JENK_SUBNET_ID="subnet-40c9f924"
+  export USE_JENKINS_AMI="ami-ecd17591"
+elif ! [ -z "$EQP" ];then
+ export MATTENV=devops
+ export JENKINS_TYPE=jenkm-eqp-test
+ export JENK_SEC_GRP_IDS='"sg-269dd651","sg-769fd401","sg-b04e01c6"'
+ export JENKINS_MASTER_TYPE="eqp"	
+ export JENK_KEY_NAME="devops-build-17"
+ export JENK_SUBNET_ID="subnet-4f2c112b"
+ export USE_JENKINS_AMI="ami-ecd17591"
+fi
+
 export JENK_AMI=$USE_JENKINS_AMI
 export JENKINS_DISK_SIZE=100
+
+#export USE_JENKINS_AMI="ami-b2003ac8" 
+#export USE_JENKINS_AMI="ami-22d30c5f"
+#export USE_JENKINS_AMI="ami-9cbe67e1"
+#
+# eqp master
 
 #
 #export MATTENV=webdigital
