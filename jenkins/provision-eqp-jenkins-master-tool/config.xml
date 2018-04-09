@@ -25,7 +25,7 @@
         <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
           <name>Environment</name>
           <description>Jenkins Environment</description>
-          <__uuid>33486dfe-5fea-4e2e-93bd-32de116f47f5</__uuid>
+          <__uuid>d7dae0c1-dcd7-4ad3-b710-8bb65c006d39</__uuid>
           <__remote>false</__remote>
           <__script>def list= [&apos;Staging&apos;,&apos;Production&apos;]</__script>
           <__localBaseDirectory serialization="custom">
@@ -48,7 +48,7 @@
         <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
           <name>JENK_INSTANCE_TYPE</name>
           <description>jenkins instance type</description>
-          <__uuid>efd71c18-2c36-4ce8-a515-769346091a64</__uuid>
+          <__uuid>271549a7-b53a-49ca-8527-e93ef41a2b7c</__uuid>
           <__remote>false</__remote>
           <__script>def list= [&apos;m4.xlarge&apos;,&apos;t2.xlarge&apos;,&apos;m4.large&apos;,&apos;t2.large&apos;,&apos;m4.2xlarge&apos;]</__script>
           <__localBaseDirectory serialization="custom">
@@ -173,7 +173,7 @@ return secGroups</script>
         <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
           <name>JENK_VOL_TYPE</name>
           <description>Jenkins EBS Volume Type</description>
-          <__uuid>07fc922b-6d26-4955-b95c-fde4c8885578</__uuid>
+          <__uuid>f7689eba-dc38-442c-a258-ba9025525f26</__uuid>
           <__remote>false</__remote>
           <__script>def list= [&apos;gp2&apos;,&apos;standard&apos;]</__script>
           <__localBaseDirectory serialization="custom">
@@ -191,7 +191,7 @@ return secGroups</script>
         <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
           <name>SKIPNODES</name>
           <description>skip creation of nodes for jenkins master</description>
-          <__uuid>e4f9e0f4-ec79-4bee-a5e1-938017411f05</__uuid>
+          <__uuid>b538a496-ccd4-46ea-8d2c-53e9469e04ac</__uuid>
           <__remote>false</__remote>
           <__script>def list= [&apos;yes&apos;,&apos;no&apos;]</__script>
           <__localBaseDirectory serialization="custom">
@@ -209,7 +209,7 @@ return secGroups</script>
         <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
           <name>TEST_NODES</name>
           <description>whether to use smaller node counts when testing</description>
-          <__uuid>9ae973b0-c8ea-4241-b446-7bd686d6e4e2</__uuid>
+          <__uuid>fba0fcba-e56a-48fb-b448-d63a029798ba</__uuid>
           <__remote>false</__remote>
           <__script>def list= [&apos;no&apos;,&apos;yes&apos;]</__script>
           <__localBaseDirectory serialization="custom">
@@ -271,23 +271,7 @@ return secGroups</script>
       <paramsToUseForLimit></paramsToUseForLimit>
     </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.8.0">
-    <configVersion>2</configVersion>
-    <userRemoteConfigs>
-      <hudson.plugins.git.UserRemoteConfig>
-        <url>git@github.com:magento-cicd/jenkins-automation.git</url>
-        <credentialsId>e543c731-94dc-4d68-8aad-9fd12b484460</credentialsId>
-      </hudson.plugins.git.UserRemoteConfig>
-    </userRemoteConfigs>
-    <branches>
-      <hudson.plugins.git.BranchSpec>
-        <name>*/$RUNNING_BRANCH</name>
-      </hudson.plugins.git.BranchSpec>
-    </branches>
-    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-    <submoduleCfg class="list"/>
-    <extensions/>
-  </scm>
+  <scm class="hudson.scm.NullSCM"/>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -337,10 +321,16 @@ export thebranch=$RUNNING_BRANCH
 export FULL_PROCESS=no
 export STARTING_NODE_AZ=&apos;a&apos;
 #
-export JENKINS_TYPE=&quot;&quot;
-export AWS_ACCOUNT=&quot;981263594894&quot;
+export JENKINS_TYPE=&quot;jenkm-eqp-test&quot;
+#export AWS_ACCOUNT=&quot;981263594894&quot;
 export JENKINS_MASTER_TYPE=&quot;eqp&quot;
 #
+MYAPI=$(aws ssm get-parameter --name /jenkins-github-api-token-read-only/eqp --with-decryption --output text --query Parameter.Value)
+git clone https://$MYAPI@github.com/magento-cicd/jenkins-automation.git
+#
+cd jenkins-automation
+git checkout $RUNNING_BRANCH
+exit
 source ~/.bash_profile
 cd jenkins-master
 sh jenkins_automation.sh
