@@ -1,0 +1,296 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.12.2">
+  <actions/>
+  <description>Create multiple jenkins masters using Provision Only jenkins job</description>
+  <displayName>Launch Multiple Jenkins Masters</displayName>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.27">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>INSTANCES_TO_LAUNCH</name>
+          <description>how many instances to launch</description>
+          <defaultValue>0</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <org.biouno.unochoice.ChoiceParameter plugin="uno-choice@1.5.4">
+          <name>JENKINS_TYPE</name>
+          <description>Branch/Jenkins Master stack that you want to create</description>
+          <randomName>choice-parameter-4138622629137</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.35">
+              <script>def script = new GroovyScriptEngine( &apos;.&apos; ).with {
+  loadScriptByName( &apos;/var/lib/jenkins/parameters/dev-jenkins-type.groovy&apos; )
+} 
+this.metaClass.mixin script
+
+return getJenkinsMasters(false, &apos;&apos;)</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.35">
+              <script>return [&apos;&lt;-- loading... --&gt;&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>run-multiple-jenkins-masters-provision-only</projectName>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+        </org.biouno.unochoice.ChoiceParameter>
+        <hudson.model.StringParameterDefinition>
+          <name>JENKINS_BRANCH</name>
+          <description>which git branch to pull Jenkins jobs. if empty, will use JENKINS_TYPE</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
+          <name>Jenkins_Environment</name>
+          <description>Jenkins Environment</description>
+          <__uuid>b8c6cbf9-c30a-470b-b245-6efed66f575f</__uuid>
+          <__remote>false</__remote>
+          <__script>def list=[&apos;Develop&apos;,&apos;Staging&apos;,&apos;Production&apos;]</__script>
+          <__localBaseDirectory serialization="custom">
+            <hudson.FilePath>
+              <default>
+                <remote>/var/lib/jenkins/dynamic_parameter/classpath</remote>
+              </default>
+              <boolean>true</boolean>
+            </hudson.FilePath>
+          </__localBaseDirectory>
+          <__remoteBaseDirectory>dynamic_parameter_classpath</__remoteBaseDirectory>
+          <__classPath></__classPath>
+          <readonlyInputField>false</readonlyInputField>
+        </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>Executors</name>
+          <description>Number of executors, if 0, uses default, otherwise, will use specified amount</description>
+          <defaultValue>0</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
+          <name>JENK_INSTANCE_TYPE</name>
+          <description>jenkins instance type</description>
+          <__uuid>87e01f70-a755-4fd3-88f5-a376ac7fe21d</__uuid>
+          <__remote>false</__remote>
+          <__script>def list= [&apos;m4.xlarge&apos;,&apos;t2.xlarge&apos;,&apos;m4.large&apos;,&apos;t2.large&apos;,&apos;m4.2xlarge&apos;]</__script>
+          <__localBaseDirectory serialization="custom">
+            <hudson.FilePath>
+              <default>
+                <remote>/var/lib/jenkins/dynamic_parameter/classpath</remote>
+              </default>
+              <boolean>true</boolean>
+            </hudson.FilePath>
+          </__localBaseDirectory>
+          <__remoteBaseDirectory>dynamic_parameter_classpath</__remoteBaseDirectory>
+          <__classPath></__classPath>
+          <readonlyInputField>false</readonlyInputField>
+        </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <org.biouno.unochoice.ChoiceParameter plugin="uno-choice@1.5.4">
+          <name>AWS_ACCOUNT</name>
+          <description>Select AWS Account</description>
+          <randomName>choice-parameter-174150409996975</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.35">
+              <script>return [&apos;756760148189&apos;, &apos;981263594894&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.35">
+              <script>return [&apos;756760148189&apos;, &apos;981263594894&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>run-multiple-jenkins-masters-provision-only</projectName>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+        </org.biouno.unochoice.ChoiceParameter>
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@1.5.4">
+          <name>JENK_SUBNET_NAME</name>
+          <description>Jenkins Subnets available for the selected AWS account</description>
+          <randomName>choice-parameter-174150412580449</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.35">
+              <script>def subNets = [&apos;WebDigital-Private-PL-1a&apos;, &apos;WebDigital-Private-PL-1b&apos;,                        &apos;WebDigital-Private-PL-1c&apos;,                           &apos;WebDigital-Private-PL-1d&apos;]
+
+if (AWS_ACCOUNT == &apos;981263594894&apos; &amp;&amp; Jenkins_Environment == &apos;Production&apos;) {
+    subNets = [&apos;DevOps-EQP-Prod-Private-us-east-1a&apos;,                             &apos;DevOps-EQP-Prod-Private-us-east-1b&apos;,                               &apos;DevOps-EQP-Prod-Private-us-east-1c&apos;,                               &apos;DevOps-EQP-Prod-Private-us-east-1d&apos;]
+}
+else if (AWS_ACCOUNT == &apos;981263594894&apos;) {
+    subNets = [&apos;DevOps-EQP-Int-Private-us-east-1a&apos;,                             &apos;DevOps-EQP-Int-Private-us-east-1b&apos;,                               &apos;DevOps-EQP-Int-Private-us-east-1c&apos;,                               &apos;DevOps-EQP-Int-Private-us-east-1d&apos;]
+}
+
+return subNets</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.35">
+              <script>return [&apos;&lt;-- loading... --&gt;&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>run-multiple-jenkins-masters-provision-only</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>AWS_ACCOUNT,Jenkins_Environment</referencedParameters>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+        </org.biouno.unochoice.CascadeChoiceParameter>
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@1.5.4">
+          <name>JENK_SEC_GRP_NAMES</name>
+          <description></description>
+          <randomName>choice-parameter-174150414715426</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.35">
+              <script>def secGroups = [&apos;Digital-private-Prod Digital-private-ALL digital-jenkins-access-cicd&apos;]
+
+if (AWS_ACCOUNT == &apos;981263594894&apos; &amp;&amp; Jenkins_Environment == &apos;Production&apos;) {
+    secGroups = [&apos;DevOps-EQP-Prod-office-http-access-sg DevOps-EQP-Prod-office-ssh-access-sg Jenkins-Masters-Prod&apos;]
+}
+else if (AWS_ACCOUNT == &apos;981263594894&apos;) {
+    secGroups = [&apos;DevOps-EQP-Int-office-http-access-sg DevOps-EQP-Int-office-ssh-access-sg Jenkins-Masters-Int&apos;]
+}
+
+return secGroups</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.35">
+              <script>return [&apos;&lt;-- loading... --&gt;&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>run-multiple-jenkins-masters-provision-only</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>AWS_ACCOUNT,Jenkins_Environment</referencedParameters>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+        </org.biouno.unochoice.CascadeChoiceParameter>
+        <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
+          <name>JENK_VOL_TYPE</name>
+          <description>Jenkins EBS Volume Type</description>
+          <__uuid>4c4a91c8-2af6-4582-8dbb-85dfe1e47e38</__uuid>
+          <__remote>false</__remote>
+          <__script>def list= [&apos;gp2&apos;,&apos;standard&apos;]</__script>
+          <__localBaseDirectory serialization="custom">
+            <hudson.FilePath>
+              <default>
+                <remote>/var/lib/jenkins/dynamic_parameter/classpath</remote>
+              </default>
+              <boolean>true</boolean>
+            </hudson.FilePath>
+          </__localBaseDirectory>
+          <__remoteBaseDirectory>dynamic_parameter_classpath</__remoteBaseDirectory>
+          <__classPath></__classPath>
+          <readonlyInputField>false</readonlyInputField>
+        </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
+          <name>SKIPNODES</name>
+          <description>skip creation of nodes for jenkins master</description>
+          <__uuid>9c0fa262-85c1-4d2f-8ba6-d4b2055a0e52</__uuid>
+          <__remote>false</__remote>
+          <__script>def list= [&apos;yes&apos;,&apos;no&apos;]</__script>
+          <__localBaseDirectory serialization="custom">
+            <hudson.FilePath>
+              <default>
+                <remote>/var/lib/jenkins/dynamic_parameter/classpath</remote>
+              </default>
+              <boolean>true</boolean>
+            </hudson.FilePath>
+          </__localBaseDirectory>
+          <__remoteBaseDirectory>dynamic_parameter_classpath</__remoteBaseDirectory>
+          <__classPath></__classPath>
+          <readonlyInputField>false</readonlyInputField>
+        </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
+          <name>TEST_NODES</name>
+          <description>whether to use smaller node counts when testing</description>
+          <__uuid>430c5dc3-ba4e-4f54-8404-7033149bd02f</__uuid>
+          <__remote>false</__remote>
+          <__script>def list= [&apos;no&apos;,&apos;yes&apos;]</__script>
+          <__localBaseDirectory serialization="custom">
+            <hudson.FilePath>
+              <default>
+                <remote>/var/lib/jenkins/dynamic_parameter/classpath</remote>
+              </default>
+              <boolean>true</boolean>
+            </hudson.FilePath>
+          </__localBaseDirectory>
+          <__remoteBaseDirectory>dynamic_parameter_classpath</__remoteBaseDirectory>
+          <__classPath></__classPath>
+          <readonlyInputField>false</readonlyInputField>
+        </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>TOTAL_TEST_NODES</name>
+          <description>if TEST_NODES is yes, how many to create</description>
+          <defaultValue>4</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>RUNNING_BRANCH</name>
+          <description>which branch in jenkins-automation repo to use to run this job</description>
+          <defaultValue>$BRANCH_AUTO</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>USE_JENKINS_AMI</name>
+          <description>if this is not empty, use provided AMI id</description>
+          <defaultValue>$JENKINS_MAIN_AMI</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>JENKB_AMI</name>
+          <description>if this is not empty, use provided AMI id for jenkb agents</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>JENKS_AMI</name>
+          <description>if this is not empty, use provided AMI id for jenks agents</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@2.0.1">
+      <maxConcurrentPerNode>0</maxConcurrentPerNode>
+      <maxConcurrentTotal>0</maxConcurrentTotal>
+      <categories class="java.util.concurrent.CopyOnWriteArrayList"/>
+      <throttleEnabled>false</throttleEnabled>
+      <throttleOption>project</throttleOption>
+      <limitOneJobWithMatchingParams>false</limitOneJobWithMatchingParams>
+      <paramsToUseForLimit></paramsToUseForLimit>
+    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers/>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.41">
+    <script>def int numberOfJobs = INSTANCES_TO_LAUNCH as Integer
+def int ExecutorstoRun = Executors as Integer
+node {
+    build job: &apos;start-jenkins-agents-util&apos;
+    sleep 10
+    for (int i=0; i &lt; numberOfJobs; i++) {
+        build job: &apos;dev-provision-only-jenkins-master-tool&apos;, 
+        parameters: [ 
+            string(name: &apos;JENKINS_TYPE&apos;, value: &quot;${JENKINS_TYPE}&quot;), 
+            string(name: &apos;JENKINS_BRANCH&apos;,value: &quot;${JENKINS_BRANCH}&quot;),
+            string(name: &apos;Environment&apos;,value: &quot;${Jenkins_Environment}&quot;),
+            string(name: &apos;Executors&apos;,value: &quot;${Executors}&quot;),
+            string(name: &apos;JENK_INSTANCE_TYPE&apos;,value: &quot;${JENK_INSTANCE_TYPE}&quot;),
+            string(name: &apos;JENK_SUBNET_NAME&apos;,value: &quot;${JENK_SUBNET_NAME}&quot;),
+            string(name: &apos;JENK_SEC_GRP_NAMES&apos;,value: &quot;${JENK_SEC_GRP_NAMES}&quot;),
+            string(name: &apos;JENK_VOL_TYPE&apos;,value: &quot;${JENK_VOL_TYPE}&quot;),
+            string(name: &apos;SKIPNODES&apos;,value: &quot;${SKIPNODES}&quot;),
+            string(name: &apos;TEST_NODES&apos;,value: &quot;${TEST_NODES}&quot;),
+            string(name: &apos;TOTAL_TEST_NODES&apos;,value: &quot;${TOTAL_TEST_NODES}&quot;),
+            string(name: &apos;RUNNING_BRANCH&apos;,value: &quot;${RUNNING_BRANCH}&quot;),
+            string(name: &apos;USE_JENKINS_AMI&apos;,value: &quot;${USE_JENKINS_AMI}&quot;),
+            string(name: &apos;JENKB_AMI&apos;,value: &quot;${JENKB_AMI}&quot;),
+            string(name: &apos;JENKS_AMI&apos;,value: &quot;${JENKS_AMI}&quot;),
+            string(name: &apos;FROM_BUILD&apos;, value: i.toString())
+        ], wait: false
+        sleep 5
+    }
+}
+</script>
+    <sandbox>false</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

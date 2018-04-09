@@ -1,0 +1,361 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>provisions eqp jenkins master</description>
+  <displayName>Launch EQP Jenkins Master</displayName>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jp.ikedam.jenkins.plugins.groovy__label__assignment.GroovyLabelAssignmentProperty plugin="groovy-label-assignment@1.2.0">
+      <secureGroovyScript plugin="script-security@1.41">
+        <script>return label_build</script>
+        <sandbox>false</sandbox>
+      </secureGroovyScript>
+    </jp.ikedam.jenkins.plugins.groovy__label__assignment.GroovyLabelAssignmentProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.27">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>JENKINS_BRANCH</name>
+          <description>which git branch to pull Jenkins jobs. if empty, will use JENKINS_TYPE</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
+          <name>Environment</name>
+          <description>Jenkins Environment</description>
+          <__uuid>33486dfe-5fea-4e2e-93bd-32de116f47f5</__uuid>
+          <__remote>false</__remote>
+          <__script>def list= [&apos;Staging&apos;,&apos;Production&apos;]</__script>
+          <__localBaseDirectory serialization="custom">
+            <hudson.FilePath>
+              <default>
+                <remote>/var/lib/jenkins/dynamic_parameter/classpath</remote>
+              </default>
+              <boolean>true</boolean>
+            </hudson.FilePath>
+          </__localBaseDirectory>
+          <__remoteBaseDirectory>dynamic_parameter_classpath</__remoteBaseDirectory>
+          <__classPath></__classPath>
+          <readonlyInputField>false</readonlyInputField>
+        </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>Executors</name>
+          <description>Number of executors, if 0, uses default, otherwise, will use specified amount</description>
+          <defaultValue>0</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
+          <name>JENK_INSTANCE_TYPE</name>
+          <description>jenkins instance type</description>
+          <__uuid>efd71c18-2c36-4ce8-a515-769346091a64</__uuid>
+          <__remote>false</__remote>
+          <__script>def list= [&apos;m4.xlarge&apos;,&apos;t2.xlarge&apos;,&apos;m4.large&apos;,&apos;t2.large&apos;,&apos;m4.2xlarge&apos;]</__script>
+          <__localBaseDirectory serialization="custom">
+            <hudson.FilePath>
+              <default>
+                <remote>/var/lib/jenkins/dynamic_parameter/classpath</remote>
+              </default>
+              <boolean>true</boolean>
+            </hudson.FilePath>
+          </__localBaseDirectory>
+          <__remoteBaseDirectory>dynamic_parameter_classpath</__remoteBaseDirectory>
+          <__classPath></__classPath>
+          <readonlyInputField>false</readonlyInputField>
+        </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@2.1">
+          <name>JENK_SUBNET_NAME</name>
+          <description>Jenkins Subnets available for the selected AWS account
+
+</description>
+          <randomName>choice-parameter-77981043193979</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.41">
+              <script>def subNets = [&apos;vpc-devops-eqp-stage-private-us-east-1a&apos;, &apos;vpc-devops-eqp-stage-private-us-east-1b&apos;,                        &apos;vpc-devops-eqp-stage-private-us-east-1c&apos;,&apos;vpc-devops-eqp-stage-private-us-east-1d&apos;]
+
+if (Environment == &apos;Staging&apos;) {
+    subNets = [&apos;vpc-devops-eqp-stage-private-us-east-1a&apos;, &apos;vpc-devops-eqp-stage-private-us-east-1b&apos;,                        &apos;vpc-devops-eqp-stage-private-us-east-1c&apos;,&apos;vpc-devops-eqp-stage-private-us-east-1d&apos;]
+}
+else
+{
+subNets = [&apos;vpc-devops-eqp-stage-private-us-east-1a&apos;, &apos;vpc-devops-eqp-stage-private-us-east-1b&apos;,                        &apos;vpc-devops-eqp-stage-private-us-east-1c&apos;,&apos;vpc-devops-eqp-stage-private-us-east-1d&apos;]
+}
+
+return subNets</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.41">
+              <script>return [&apos;&lt;-- loading... --&gt;&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>provision-eqp-jenkins-master-tool</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>Environment</referencedParameters>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+          <filterLength>1</filterLength>
+        </org.biouno.unochoice.CascadeChoiceParameter>
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@2.1">
+          <name>JENK_SUBNET_ID</name>
+          <description></description>
+          <randomName>choice-parameter-1089456773492352</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.41">
+              <script>def subNetId = [&apos;subnet-4f2c112b&apos;]
+
+if (JENK_SUBNET_NAME == &apos;vpc-devops-eqp-stage-private-us-east-1a&apos;) {
+  subNetId = [&apos;subnet-4f2c112b&apos;]
+}
+else if (JENK_SUBNET_NAME == &apos;vpc-devops-eqp-stage-private-us-east-1b&apos;) {
+  subNetId = [&apos;subnet-ddbcf5f2&apos;]
+}
+else if (JENK_SUBNET_NAME == &apos;vpc-devops-eqp-stage-private-us-east-1c&apos;) {
+  subNetId = [&apos;subnet-5ff7e614&apos;]
+}
+else if (JENK_SUBNET_NAME == &apos;vpc-devops-eqp-stage-private-us-east-1d&apos;) {
+  subNetId = [&apos;subnet-fb1b57a6&apos;]
+}
+else
+{
+  subNetId = [&apos;subnet-4f2c112b&apos;]
+}
+
+return subNetId
+</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.41">
+              <script>return [&apos;&lt;-- loading... --&gt;&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>provision-eqp-jenkins-master-tool</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>JENK_SUBNET_NAME</referencedParameters>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+          <filterLength>1</filterLength>
+        </org.biouno.unochoice.CascadeChoiceParameter>
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@2.1">
+          <name>JENK_SEC_GRP_IDS</name>
+          <description>Security Group Ids</description>
+          <randomName>choice-parameter-87457773884936</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.41">
+              <script>def secGroups = [&apos;&quot;sg-269dd651&quot;,&quot;sg-769fd401&quot;,&quot;sg-b04e01c6&quot;&apos;]
+
+if (Environment == &apos;Staging&apos;) {
+    secGroups = [&apos;&quot;sg-269dd651&quot;,&quot;sg-769fd401&quot;,&quot;sg-b04e01c6&quot;&apos;]
+}
+else if (Environment == &apos;Production&apos;) {
+    secGroups = [&apos;&quot;sg-269dd651&quot;,&quot;sg-769fd401&quot;,&quot;sg-b04e01c6&quot;&apos;]
+}
+
+return secGroups</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.41">
+              <script>return [&apos;&lt;-- loading... --&gt;&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>provision-eqp-jenkins-master-tool</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>Environment</referencedParameters>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+          <filterLength>1</filterLength>
+        </org.biouno.unochoice.CascadeChoiceParameter>
+        <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
+          <name>JENK_VOL_TYPE</name>
+          <description>Jenkins EBS Volume Type</description>
+          <__uuid>07fc922b-6d26-4955-b95c-fde4c8885578</__uuid>
+          <__remote>false</__remote>
+          <__script>def list= [&apos;gp2&apos;,&apos;standard&apos;]</__script>
+          <__localBaseDirectory serialization="custom">
+            <hudson.FilePath>
+              <default>
+                <remote>/var/lib/jenkins/dynamic_parameter/classpath</remote>
+              </default>
+              <boolean>true</boolean>
+            </hudson.FilePath>
+          </__localBaseDirectory>
+          <__remoteBaseDirectory>dynamic_parameter_classpath</__remoteBaseDirectory>
+          <__classPath></__classPath>
+          <readonlyInputField>false</readonlyInputField>
+        </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
+          <name>SKIPNODES</name>
+          <description>skip creation of nodes for jenkins master</description>
+          <__uuid>e4f9e0f4-ec79-4bee-a5e1-938017411f05</__uuid>
+          <__remote>false</__remote>
+          <__script>def list= [&apos;yes&apos;,&apos;no&apos;]</__script>
+          <__localBaseDirectory serialization="custom">
+            <hudson.FilePath>
+              <default>
+                <remote>/var/lib/jenkins/dynamic_parameter/classpath</remote>
+              </default>
+              <boolean>true</boolean>
+            </hudson.FilePath>
+          </__localBaseDirectory>
+          <__remoteBaseDirectory>dynamic_parameter_classpath</__remoteBaseDirectory>
+          <__classPath></__classPath>
+          <readonlyInputField>false</readonlyInputField>
+        </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
+          <name>TEST_NODES</name>
+          <description>whether to use smaller node counts when testing</description>
+          <__uuid>9ae973b0-c8ea-4241-b446-7bd686d6e4e2</__uuid>
+          <__remote>false</__remote>
+          <__script>def list= [&apos;no&apos;,&apos;yes&apos;]</__script>
+          <__localBaseDirectory serialization="custom">
+            <hudson.FilePath>
+              <default>
+                <remote>/var/lib/jenkins/dynamic_parameter/classpath</remote>
+              </default>
+              <boolean>true</boolean>
+            </hudson.FilePath>
+          </__localBaseDirectory>
+          <__remoteBaseDirectory>dynamic_parameter_classpath</__remoteBaseDirectory>
+          <__classPath></__classPath>
+          <readonlyInputField>false</readonlyInputField>
+        </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>TOTAL_TEST_NODES</name>
+          <description>IF TEST_NODES = yes, number of nodes to create. must be at least 4</description>
+          <defaultValue>4</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>RUNNING_BRANCH</name>
+          <description>which branch in jenkins-automation repo to use to run this job</description>
+          <defaultValue>$BRANCH_AUTO</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>USE_JENKINS_AMI</name>
+          <description>if this is not empty, use provided AMI id</description>
+          <defaultValue>$JENKINS_MAIN_AMI</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>JENKB_AMI</name>
+          <description>if this is not empty, it will pull this file name form s3 to use as Jenks agent instead of using default AMI</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>JENKS_AMI</name>
+          <description>if this is not empty, it will pull this file name form s3 to use as Jenkb agent instead of using default AMI</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.plugins.global__variable__string__parameter.GlobalVariableStringParameterDefinition plugin="global-variable-string-parameter@1.2">
+          <name>label_build</name>
+          <description></description>
+          <defaultValue>${jenkslabel_xx}</defaultValue>
+        </hudson.plugins.global__variable__string__parameter.GlobalVariableStringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>FROM_BUILD</name>
+          <description>only used for multiple creation job</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@2.0.1">
+      <maxConcurrentPerNode>0</maxConcurrentPerNode>
+      <maxConcurrentTotal>0</maxConcurrentTotal>
+      <categories class="java.util.concurrent.CopyOnWriteArrayList"/>
+      <throttleEnabled>false</throttleEnabled>
+      <throttleOption>project</throttleOption>
+      <limitOneJobWithMatchingParams>false</limitOneJobWithMatchingParams>
+      <paramsToUseForLimit></paramsToUseForLimit>
+    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.8.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>git@github.com:magento-cicd/jenkins-automation.git</url>
+        <credentialsId>e543c731-94dc-4d68-8aad-9fd12b484460</credentialsId>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/$RUNNING_BRANCH</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.35.2">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs class="empty-list"/>
+          <projects>start-jenkins-agents-util</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <triggerFromChildProjects>false</triggerFromChildProjects>
+          <block>
+            <buildStepFailureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </buildStepFailureThreshold>
+            <unstableThreshold>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+              <completeBuild>true</completeBuild>
+            </unstableThreshold>
+            <failureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </failureThreshold>
+          </block>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+    <hudson.tasks.Shell>
+      <command>set +x
+export UPDATE_JENKINS_HOSTNAME=yes
+export CLEAR_JOBS=no
+export GITHUB_MAGENTO_ID=&quot;e543c731-94dc-4d68-8aad-9fd12b484460&quot;
+export thebranch=$RUNNING_BRANCH
+#export LATESTPLUGINS=$USE_LATEST_JENKINS_PLUGINS
+export FULL_PROCESS=no
+export STARTING_NODE_AZ=&apos;a&apos;
+#
+export JENKINS_TYPE=&quot;&quot;
+export AWS_ACCOUNT=&quot;981263594894&quot;
+export JENKINS_MASTER_TYPE=&quot;eqp&quot;
+#
+source ~/.bash_profile
+cd jenkins-master
+sh jenkins_automation.sh
+cd -
+echo &quot; &quot;</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <hudson.plugins.ws__cleanup.PreBuildCleanup plugin="ws-cleanup@0.34">
+      <deleteDirs>false</deleteDirs>
+      <cleanupParameter></cleanupParameter>
+      <externalDelete></externalDelete>
+    </hudson.plugins.ws__cleanup.PreBuildCleanup>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.8.9"/>
+    <org.jenkinsci.plugins.builduser.BuildUser plugin="build-user-vars-plugin@1.5"/>
+  </buildWrappers>
+</project>
