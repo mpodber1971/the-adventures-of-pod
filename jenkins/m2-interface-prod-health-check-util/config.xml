@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.17">
+  <actions/>
+  <description></description>
+  <displayName>m2 Interface Prod Load Balancer Check</displayName>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.27">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>RUNNING_BRANCH</name>
+          <description>which branch in jenkins-automation repo to use to run this job</description>
+          <defaultValue>$BRANCH_AUTO</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.plugins.global__variable__string__parameter.GlobalVariableStringParameterDefinition plugin="global-variable-string-parameter@1.2">
+          <name>label_build</name>
+          <description></description>
+          <defaultValue>${jenkslabel_xx}</defaultValue>
+        </hudson.plugins.global__variable__string__parameter.GlobalVariableStringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@2.0.1">
+      <maxConcurrentPerNode>0</maxConcurrentPerNode>
+      <maxConcurrentTotal>0</maxConcurrentTotal>
+      <categories class="java.util.concurrent.CopyOnWriteArrayList"/>
+      <throttleEnabled>false</throttleEnabled>
+      <throttleOption>project</throttleOption>
+      <limitOneJobWithMatchingParams>false</limitOneJobWithMatchingParams>
+      <paramsToUseForLimit></paramsToUseForLimit>
+    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers/>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.45">
+    <script>def agent_master = label_build 
+node (&apos;master&apos;) {
+    build job: &apos;start-jenkins-agents-util&apos;
+}
+node (agent_master) {
+ stage (&apos;Checkout&apos;) {
+  git(
+       url: &apos;https://XXXX@github.com/magento-cicd/jenkins-automation.git&apos;,
+       branch: &apos;${RUNNING_BRANCH}&apos;
+   )
+ }
+ stage(&apos;Check Load balancer&apos;) {
+  def workspace = pwd()
+  dir (workspace+&apos;/jenkins-master/scripts/&apos;)
+  {
+    exitcode = sh returnStatus: true, script: &apos;sh check-interface-lb.sh;&apos;
+    switch (exitcode) {
+           case 0: 
+           currentBuild.result = &apos;success&apos;
+           break
+           case 1: 
+           currentBuild.result = &apos;failure&apos;
+           break
+           case 2:
+           currentBuild.result = &apos;unstable&apos;
+           break
+    }
+  }
+ }
+ stage(&apos;Send Email&apos;) {
+  if (exitcode &gt; 0) {
+    mail mimeType: &apos;text/html&apos;, body: &quot;Jenkins Interface Load Balancer no healthy instances&quot;, cc: &apos;mpodber@magento.com&apos;, from: &apos;toolm@magento.com&apos;, replyTo: &apos;toolm@magento.com&apos;, subject: &apos;Production Interface Load Balancer Error&apos;, to: &apos;mpodber@magento.com&apos;
+  }
+ }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
