@@ -1,0 +1,7 @@
+Host github.com
+	User mpodber1971
+    IdentityFile ~/.ssh/id_rsa
+    StrictHostKeyChecking no
+
+Host *
+    StrictHostKeyChecking no
