@@ -7,7 +7,82 @@
   <properties>
     <jp.ikedam.jenkins.plugins.groovy__label__assignment.GroovyLabelAssignmentProperty plugin="groovy-label-assignment@1.2.0">
       <secureGroovyScript plugin="script-security@1.41">
-        <script>return label_build</script>
+        <script>import jenkins.model.*
+import jenkins.node_monitors.*
+import jenkins.slaves.*
+import java.util.concurrent.*
+import java.util.*
+import javax.mail.*
+import javax.mail.internet.*
+import javax.activation.*
+def jenkinsInstance = Jenkins.getInstance()
+def jenkinsNodes = jenkinsInstance.getNodes()
+
+def count = 0
+
+//def mailto = &quot;DL-Magento-DevOps-Alerts@magento.com&quot;;
+//def mailfrom = &quot;noreply@magento.com&quot;;
+//def mailhost = &quot;smtp.corp.magento.com&quot;;
+
+// get global variables
+globalNodeProperties = jenkinsInstance.getGlobalNodeProperties()
+envVarsNodePropertyList = globalNodeProperties.getAll(hudson.slaves.EnvironmentVariablesNodeProperty.class)
+envVars = envVarsNodePropertyList.get(0).getEnvVars()
+
+// set variables
+def labelString = envVars.get(&quot;jenkslabel_xx&quot;)
+
+
+for (nodes in jenkinsNodes) {
+   def computer = nodes.computer
+  if (computer == null) {
+       println(&apos; We have a NULL slave.  Restart Jenkins &apos;)
+       currentBuild.result = &apos;FAILURE&apos;
+    // sendEmail(mailto,mailfrom,mailhost,labelBuild) 
+  }
+  else {
+   if (nodes.getLabelString()==labelString &amp;&amp; count  &lt; 1) {
+       if (computer.isOnline() &amp;&amp; !computer.isConnecting() &amp;&amp; computer.isIdle()) {
+           //  Online / Not Connecting / Idle 
+           count++
+           println(computer.name + &apos; Idle time: &apos;  + new java.text.DecimalFormat(&quot;0.00&quot;).format(((System.currentTimeMillis() - computer.getIdleStartMilliseconds())/60000)) + &apos; mins&apos;);
+       } else if (computer.isConnecting()) {
+           // Connecting  
+           count++
+           println(&apos;Agent &apos; + computer.name + &apos; is already starting&apos;)            
+       } else if (computer.isOffline() &amp;&amp; !computer.isConnecting()) {
+           // Offline / Not Connecting
+           count++         
+           println(computer.name + &apos; Starting offline agent&apos;)
+   	   computer.connect(false)
+           sleep(500)
+       }
+    } 
+  }
+}
+
+
+def sendEmail(to,from,host,slavename) { 
+      def properties = System.getProperties();
+      properties.setProperty(&quot;mail.smtp.host&quot;, host);
+      Session session = Session.getDefaultInstance(properties);
+
+      try {
+         MimeMessage message = new MimeMessage(session);
+         message.setFrom(new InternetAddress(from));
+         message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+         message.setSubject(&quot;Null slave error on &quot; + build.getEnvironment(listener).get(&quot;JOB_URL&quot;));
+
+         // Now set the actual message
+         message.setText(&quot;Null slave object on &quot; + slavename);
+         Transport.send(message);
+         println(&quot;Null slave error occurred.  Email was sent successfully....&quot;);
+      }catch (MessagingException mex) {
+         mex.printStackTrace();
+      }
+   
+}
+return label_build</script>
         <sandbox>false</sandbox>
       </secureGroovyScript>
     </jp.ikedam.jenkins.plugins.groovy__label__assignment.GroovyLabelAssignmentProperty>
@@ -25,7 +100,7 @@
         <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
           <name>Environment</name>
           <description>Jenkins Environment</description>
-          <__uuid>d7dae0c1-dcd7-4ad3-b710-8bb65c006d39</__uuid>
+          <__uuid>cce54232-2116-4c87-adaf-281246d1d472</__uuid>
           <__remote>false</__remote>
           <__script>def list= [&apos;Staging&apos;,&apos;Production&apos;]</__script>
           <__localBaseDirectory serialization="custom">
@@ -40,6 +115,38 @@
           <__classPath></__classPath>
           <readonlyInputField>false</readonlyInputField>
         </com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition>
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@2.1">
+          <name>JENKINS_TYPE</name>
+          <description></description>
+          <randomName>choice-parameter-1094858568389386</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.41">
+              <script>def subNets = [&apos;jenkm-eqp-test&apos;]
+
+if (Environment == &apos;Staging&apos;) {
+    subNets = [&apos;jenkm-eqp-test&apos;]
+}
+else
+{
+subNets = [&apos;jenkm-eqp-test&apos;]
+}
+
+return subNets</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.41">
+              <script>return [&apos;&lt;-- loading... --&gt;&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>provision-eqp-jenkins-master-tool</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>Environment</referencedParameters>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+          <filterLength>1</filterLength>
+        </org.biouno.unochoice.CascadeChoiceParameter>
         <hudson.model.StringParameterDefinition>
           <name>Executors</name>
           <description>Number of executors, if 0, uses default, otherwise, will use specified amount</description>
@@ -48,7 +155,7 @@
         <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
           <name>JENK_INSTANCE_TYPE</name>
           <description>jenkins instance type</description>
-          <__uuid>271549a7-b53a-49ca-8527-e93ef41a2b7c</__uuid>
+          <__uuid>a0bbf54f-381b-4da3-ae67-b364447958c7</__uuid>
           <__remote>false</__remote>
           <__script>def list= [&apos;m4.xlarge&apos;,&apos;t2.xlarge&apos;,&apos;m4.large&apos;,&apos;t2.large&apos;,&apos;m4.2xlarge&apos;]</__script>
           <__localBaseDirectory serialization="custom">
@@ -173,7 +280,7 @@ return secGroups</script>
         <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
           <name>JENK_VOL_TYPE</name>
           <description>Jenkins EBS Volume Type</description>
-          <__uuid>f7689eba-dc38-442c-a258-ba9025525f26</__uuid>
+          <__uuid>2480811d-443e-4c67-808f-c4947e420a96</__uuid>
           <__remote>false</__remote>
           <__script>def list= [&apos;gp2&apos;,&apos;standard&apos;]</__script>
           <__localBaseDirectory serialization="custom">
@@ -191,7 +298,7 @@ return secGroups</script>
         <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
           <name>SKIPNODES</name>
           <description>skip creation of nodes for jenkins master</description>
-          <__uuid>b538a496-ccd4-46ea-8d2c-53e9469e04ac</__uuid>
+          <__uuid>5f3b4157-305a-40c0-8046-0706f3eb2bb3</__uuid>
           <__remote>false</__remote>
           <__script>def list= [&apos;yes&apos;,&apos;no&apos;]</__script>
           <__localBaseDirectory serialization="custom">
@@ -209,7 +316,7 @@ return secGroups</script>
         <com.seitenbau.jenkins.plugins.dynamicparameter.ChoiceParameterDefinition plugin="dynamicparameter@0.2.0">
           <name>TEST_NODES</name>
           <description>whether to use smaller node counts when testing</description>
-          <__uuid>fba0fcba-e56a-48fb-b448-d63a029798ba</__uuid>
+          <__uuid>a65a9aaa-b9fa-43be-92cd-afd2328fa9a4</__uuid>
           <__remote>false</__remote>
           <__script>def list= [&apos;no&apos;,&apos;yes&apos;]</__script>
           <__localBaseDirectory serialization="custom">
@@ -279,38 +386,6 @@ return secGroups</script>
   <triggers/>
   <concurrentBuild>true</concurrentBuild>
   <builders>
-    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.35.2">
-      <configs>
-        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
-          <configs class="empty-list"/>
-          <projects>start-jenkins-agents-util</projects>
-          <condition>ALWAYS</condition>
-          <triggerWithNoParameters>false</triggerWithNoParameters>
-          <triggerFromChildProjects>false</triggerFromChildProjects>
-          <block>
-            <buildStepFailureThreshold>
-              <name>FAILURE</name>
-              <ordinal>2</ordinal>
-              <color>RED</color>
-              <completeBuild>true</completeBuild>
-            </buildStepFailureThreshold>
-            <unstableThreshold>
-              <name>UNSTABLE</name>
-              <ordinal>1</ordinal>
-              <color>YELLOW</color>
-              <completeBuild>true</completeBuild>
-            </unstableThreshold>
-            <failureThreshold>
-              <name>FAILURE</name>
-              <ordinal>2</ordinal>
-              <color>RED</color>
-              <completeBuild>true</completeBuild>
-            </failureThreshold>
-          </block>
-          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
-        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
-      </configs>
-    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
     <hudson.tasks.Shell>
       <command>set +x
 export UPDATE_JENKINS_HOSTNAME=yes
@@ -321,8 +396,6 @@ export thebranch=$RUNNING_BRANCH
 export FULL_PROCESS=no
 export STARTING_NODE_AZ=&apos;a&apos;
 #
-export JENKINS_TYPE=&quot;jenkm-eqp-test&quot;
-#export AWS_ACCOUNT=&quot;981263594894&quot;
 export JENKINS_MASTER_TYPE=&quot;eqp&quot;
 #
 MYAPI=$(aws ssm get-parameter --name /jenkins-github-api-token-read-only/eqp --with-decryption --output text --query Parameter.Value)
@@ -330,7 +403,6 @@ git clone https://$MYAPI@github.com/magento-cicd/jenkins-automation.git
 #
 cd jenkins-automation
 git checkout $RUNNING_BRANCH
-exit
 source ~/.bash_profile
 cd jenkins-master
 sh jenkins_automation.sh
