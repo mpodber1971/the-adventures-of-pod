@@ -1,0 +1,3 @@
+AWS_PROFILE=devops aws ssm put-parameter --type "String" --name /jenkins-service-account/production/name --value XXX --overwrite
+AWS_PROFILE=devops aws ssm put-parameter --type "SecureString" --name /jenkins-service-account/production/password --value XXXX --key-id XXXXX --overwrite
+AWS_PROFILE=devops aws ssm get-parameter --name /jenkins-service-account/production/name
