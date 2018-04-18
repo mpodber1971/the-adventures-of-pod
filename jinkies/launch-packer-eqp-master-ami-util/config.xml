@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.17">
+  <actions/>
+  <description></description>
+  <displayName>Create EQP Master AMI</displayName>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.27">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>AMINAME</name>
+          <description>name of the AMI</description>
+          <defaultValue>jenkins-m2-master</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <org.biouno.unochoice.ChoiceParameter plugin="uno-choice@2.1">
+          <name>JENKINS_VERSION</name>
+          <description></description>
+          <randomName>choice-parameter-75039876407426</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.41">
+              <script>def script = new GroovyScriptEngine( &apos;.&apos; ).with {
+  loadScriptByName( &apos;/var/lib/jenkins/parameters/jenkins-version.groovy&apos; )
+} 
+this.metaClass.mixin script
+
+return getJenkinsVersions(false, &apos;&apos;)</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.41">
+              <script>return [&apos;&lt;-- loading... --&gt;&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>launch-packer-eqp-master-ami-util</projectName>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+          <filterLength>1</filterLength>
+        </org.biouno.unochoice.ChoiceParameter>
+        <hudson.model.StringParameterDefinition>
+          <name>RUNNING_BRANCH</name>
+          <description>which branch in jenkins-automation repo to use to run this job</description>
+          <defaultValue>$BRANCH_AUTO</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>AMI_ID</name>
+          <description>base AMI ID to build from</description>
+          <defaultValue>$BASE_OS_AMI</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.plugins.global__variable__string__parameter.GlobalVariableStringParameterDefinition plugin="global-variable-string-parameter@1.2">
+          <name>label_build</name>
+          <description></description>
+          <defaultValue>${jenkslabel_xx}</defaultValue>
+        </hudson.plugins.global__variable__string__parameter.GlobalVariableStringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@2.0.1">
+      <maxConcurrentPerNode>0</maxConcurrentPerNode>
+      <maxConcurrentTotal>0</maxConcurrentTotal>
+      <categories class="java.util.concurrent.CopyOnWriteArrayList"/>
+      <throttleEnabled>false</throttleEnabled>
+      <throttleOption>project</throttleOption>
+      <limitOneJobWithMatchingParams>false</limitOneJobWithMatchingParams>
+      <paramsToUseForLimit></paramsToUseForLimit>
+    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers/>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.45">
+    <script>def agent_master = label_build 
+node (&apos;master&apos;) {
+    build job: &apos;start-jenkins-agents-util&apos;
+}
+node (agent_master) {
+ git(
+       url: &apos;https://github.com/magento-cicd/jenkins-automation.git&apos;,
+       credentialsId: &apos;git-user-read&apos;,
+       poll: false, 
+       branch: &apos;${RUNNING_BRANCH}&apos;,
+       changelog: false
+  )
+  def workspace = pwd()
+  dir (workspace+&apos;/jenkins-master/packer/eqp-master/&apos;)
+  {
+    sh &apos;packer build -debug -var &quot;jenkins_cli_usr=serv.jenkm_admin_stg&quot; -var &quot;jenkins_cli_pwd=UKsTPBj2Ii&quot; -var &quot;amiid=$AMI_ID&quot; -var &quot;ami_name=$AMINAME&quot; -var &quot;jenkins_app_version=$JENKINS_VERSION&quot; eqp-master.json&apos;
+  }
+}</script>
+    <sandbox>false</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

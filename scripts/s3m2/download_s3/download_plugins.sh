@@ -22,6 +22,7 @@ AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/extended-choice-parameter.jpi $LOCL
 AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/envinject.jpi $LOCLOCATION/
 AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/ec2.jpi $LOCLOCATION/
 AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/ec2.hpi $LOCLOCATION/
+AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/ec2-2.89.4-1.1.hpi $LOCLOCATION/ 
 AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/dynamicparameter.jpi $LOCLOCATION/
 AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/dynamic-axis.jpi $LOCLOCATION/
 AWS_PROFILE=webdigital aws s3 cp $S3LOCATION/docker-commons.jpi $LOCLOCATION/

@@ -16,3 +16,4 @@ AWS_PROFILE=$THEPROFILE aws s3 cp $LOCALLOCATION/org.jenkinsci.plugins.Parameter
 AWS_PROFILE=$THEPROFILE aws s3 cp $LOCALLOCATION/org.thoughtslive.jenkins.plugins.jira.Config.xml $UPLOADLOCATION/org.thoughtslive.jenkins.plugins.jira.Config.xml
 AWS_PROFILE=$THEPROFILE aws s3 cp $LOCALLOCATION/docker-credential-ecr-login $UPLOADLOCATION/docker-credential-ecr-login
 AWS_PROFILE=$THEPROFILE aws s3 cp $LOCALLOCATION/jenkins.model.JenkinsLocationConfiguration.xml $UPLOADLOCATION/
+AWS_PROFILE=$THEPROFILE aws s3 cp $LOCALLOCATION/jdk-8u162-linux-x64.rpm $UPLOADLOCATION/
