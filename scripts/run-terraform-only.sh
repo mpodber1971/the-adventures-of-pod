@@ -28,14 +28,14 @@ elif ! [ -z "$EQP" ];then
  export JENK_KEY_NAME="devops-build-17"
  export JENK_SUBNET_ID="subnet-4f2c112b"
  export USE_JENKINS_AMI="ami-ecd17591"
-elif ! [ -z "$PACKER" ];then
+elif ! [ -z "$BASE" ];then
  export MATTENV=devops
  export JENKINS_TYPE=jenkm-eqp-test
  export JENK_SEC_GRP_IDS='"sg-269dd651","sg-769fd401","sg-b04e01c6"'
  export JENKINS_MASTER_TYPE="eqp"	
  export JENK_KEY_NAME="devops-build-17"
  export JENK_SUBNET_ID="subnet-4f2c112b"
- export USE_JENKINS_AMI="ami-18373d62"
+ export USE_JENKINS_AMI="ami-ffc06d80"
 
 fi
 
